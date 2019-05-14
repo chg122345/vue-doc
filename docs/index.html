@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>interview-docs</title>
+  <title>说明文档</title>
     <link rel="icon" href="_media/logo3.jpg">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
@@ -13,11 +13,15 @@
    <div id="app"></div>
   <script>
     window.$docsify = {
+	  homepage: 'README.md',
       name: 'vue-docs',
       repo: 'https://github.com/chg122345/vue-doc/tree/master',
       coverpage: false,
       loadSidebar: true,
-     search: {
+	  mergeNavbar: true,
+	  maxLevel: 4,
+      subMaxLevel: 2,
+	  search: {
         noData: {
           '/': 'No results!'
         },
