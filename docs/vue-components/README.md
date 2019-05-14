@@ -1,4 +1,4 @@
-## Vue封装组件说明文档
+### Vue封装组件说明文档
 + 目录说明
   + EditTable 可编辑动态表格
   + PageDialog 弹框
