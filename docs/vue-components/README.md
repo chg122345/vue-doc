@@ -12,6 +12,9 @@
 
 + 组件依赖Element-ui
 
++ 界面效果
+  ![动态表格](/images/table.png)
+
 + 使用说明
   + 引入组件
     ```js
@@ -70,7 +73,195 @@
 | handleSelectionChange | 选择框事件，参数（当前选中的表格数据） | vals(Array) |
 | cellClick | 单元格的点击事件，参数（当前点击的单元格行和列的信息） | row, column |
 
-+ 详细信息查看`EditTableDemo`
++ `EditTableDemo`
+  ```html
+  <template>
+      <div>
+          <edit-table :tableHead="tableHead"
+                      :tableData.sync="tableData"
+                      :toolBar="toolBar"
+                      ref="editTable"
+                      :spanMethod="spanMethod"
+                      :dataFilter="dataFilter"
+                      :showAdd="true"
+                      :checkbox="true"
+                      :cellStyle="tableRowStyle"
+                      @handleSelectionChange="handleSelectionChange"
+                      :pageInfo="pageInfo">
+              <template slot-scope="scope">
+                  <el-button @click="handleClick(scope,'edit')" type="text" size="small">编辑</el-button>
+                  <el-button  @click="handleClick(scope,'del')" type="text" size="small">删除</el-button>
+                  <el-button  @click="changeFilter" type="text" size="small">过滤</el-button>
+              </template>
+          </edit-table>
+      </div>
+
+  </template>
+
+  <script>
+      import EditTable from "@/components/EditTable";
+      export default {
+          name: "EditTableDemo",
+          components: {
+              EditTable
+          },
+          data() {
+              return {
+                  dataFilter: {
+                      name: '王小虎6666',
+                  },
+                  toolBar: true,
+                  pageInfo:{
+                      total: 200, // 总记录数
+                      offset: 5, // 每页显示多少条
+                  },
+                  tableHead:[
+                      {
+                          label:'个人信息',
+                          property:'name',
+                          width: 100,
+                          readonly: true,
+                          children: [
+                              {
+                                  label:'姓名',
+                                  property:'name',
+                                  width: 100,
+                                  // readonly: true
+                              },{
+                                  label:'年龄',
+                                  property:'age',
+                                  width: 100,
+                                  type: 'number',
+                                  children: [
+                                      {
+                                          label:'姓名',
+                                          property:'name',
+                                          width: 100,
+                                          // readonly: true
+                                      },{
+                                          label:'年龄',
+                                          property:'age',
+                                          width: 100,
+                                          type: 'number',
+                                      },
+                                  ]
+                              },
+                          ]
+                      }, {
+                          label:'地址',
+                          property:'address',
+                          width: 250,
+                          type: 'text',
+                          columnKey: '00001', // 用于标识哪一列 用于单元格点击事件
+                      },{
+                          label:'日期',
+                          property:'date',
+                          width: 150,
+                          type: 'date',
+                          readonly: true,
+                          columnKey: '00002', // 用于标识哪一列 用于单元格点击事件
+                      },{
+                          label:'是否开启',
+                          property:'state',
+                          width: 150,
+                          type: 'checkbox',
+                          // readonly: true,
+                      },{
+                          label:'选择框',
+                          property:'select',
+                          width: 150,
+                          type: 'select',
+                          // readonly: true,
+                          select: [
+                              {
+                                  label: '上海',
+                                  value: 'shanghai',
+                              },
+                              {
+                                  label: '南昌',
+                                  value: 'nanchang',
+                              },
+                              {
+                                  label: '武汉',
+                                  value: 'wuhan',
+                              },] // key 保持与 property 一致
+                      },
+                  ],
+                  tableData: [{
+                      date: '2016-05-02',
+                      name: '王小虎6666',
+                      age: 19,
+                      address: '上海市普陀区金沙江路 1518 弄',
+                      select: 'shanghai',
+                      state: false
+
+                  }, {
+                      date: '2016-05-04',
+                      name: '王小虎45',
+                      age: 19,
+                      address: '上海市普陀区金沙江路 1517 弄',
+                      select: 'nanchang',
+                      state: true
+                  }, {
+                      date: '2016-05-01',
+                      name: '王小虎333',
+                      age: 19,
+                      address: '上海市普陀区金沙江路 1519 弄',
+                      select: 'nanchang',
+                  }, {
+                      date: '2016-05-03',
+                      name: '王小虎222',
+                      age: 19,
+                      address: '上海市普陀区金沙江路 1519 弄',
+                      select: 'nanchang',
+                  }],
+              }
+          },
+          methods: {
+              changeFilter() {
+                  this.dataFilter = {
+                      address: '上海市普陀区金沙江路 1519 弄'
+                  }
+              },
+              handleClick(scope,type) {
+                  console.log(scope.data.scope,type)
+                  if (type === 'del'){
+                      this.tableData.splice(scope.data.scope.$index,1)
+                  }
+              },
+              /**
+               *
+               * @param rowIndex  行索引
+               * @param columnIndex  列索引
+               * @returns {number[]}
+               */
+              spanMethod({rowIndex,columnIndex}) {
+                  if (columnIndex === 2) {
+                      if (rowIndex % 2 === 0) {
+                          return [2,1]  // 合并2行1列
+                      } else {
+                          return [0,0] // 不合并
+                      }
+                  }
+              },
+              handleSelectionChange(vals) {
+                  console.log(vals)
+              },
+              tableRowStyle({rowIndex,columnIndex }) {
+                 /* if (rowIndex === 2){
+                      return "background-color: green"
+                  }*/
+                  if (columnIndex === 1) {
+                      return "color: red";
+                  } else if (columnIndex === 3) {
+                      return "color: blue";
+                  }
+                  return "";
+              },
+          }
+      }
+  </script>
+  ```
 
 ### 弹窗
 
@@ -115,6 +306,9 @@
 
 + 组件依赖Element-ui
 
++ 界面效果
+  ![动态输入框](/images/filter.png)
+
 + 使用说明
   + 引入组件
     ```js
@@ -152,11 +346,96 @@
 | handleClickBtn | 按钮点击事件 |- |
 | handleEvent | @focus绑定的事件 |- |
 
-+ 详细信息查看`PageFilterDemo`
++ `PageFilterDemo`
+  ```html
+  <template>
+    <div>
+      <page-filter
+      :query.sync="filterInfo.query"
+      :filterList="filterInfo.list"
+      :listTypeInfo="listTypeInfo"
+      @handleClickBtn="handlePageFilterClickBtn"
+      @handleEvent="handlePageFilterEvent">
+      </page-filter>
+    </div>
+  </template>
+  <script>
+  import PageFilter from '@/components/PageFilter'
+  export default {
+    name: "PageFilterDemo",
+    components: {
+      PageFilter
+    },
+    data () {
+      return {
+        // 过滤相关配置
+        filterInfo: {
+          query: {
+            account: '',
+            groupInput:{
+              field:'no',
+              value:''
+            },
+            createUser: 2,
+            createTime:'',
+          },
+          list: [
+            {type: 'input', label: '账户', value: 'account', event: 'accountValChange'},
+            {type: 'group-input', label: '供应商编码', value: 'groupInput', fields:[
+               {label: '供应商编码', value: 'no'},
+               {label: '供方分类', value: 'category'},
+               {label: '供方名称', value: 'name'},
+               {label: '履约评级', value: 'level'},
+            ]},
+            {type: 'select', label: '创建人', value: 'createUser', list: 'accountTypeList'},
+            {type: 'date', label: '创建时间', value: 'createTime'},
+            {type: 'button', label: '搜索', btType: 'primary', icon: 'el-icon-search', event: 'search', show: true},
+            {type: 'button', label: '添加', btType: 'primary', icon: 'el-icon-plus', event: 'create', show: true}
+          ]
+        },
+        // 数据项列表
+        listTypeInfo: {
+          accountTypeList: [
+            {label: '管理员', value: 0},
+            {label: '普通用户', value: 1},
+            {label: '外部用户', value: 2}
+          ]
+        },
+      }
+    },
+    methods: {
+      handlePageFilterEvent (event, data) {
+        console.log(event);
+        switch (event) {
+          // 对表格获取到的数据做处理
+          case 'accountValChange':
+            console.log('账号关闭离开后执行');
+            break
+        }
+      },
+      handlePageFilterClickBtn (event, data) {
+        console.log(event);
+        switch (event) {
+          case 'search':
+            console.log(this.filterInfo.query);
+            console.log('点击搜索按钮执行...');
+            break
+          case 'create':
+            console.log('点击添加按钮执行...');
+            break
+        }
+      }
+    }
+  }
+  </script>
+  ```
 
 ### 动态表单
 
 + 组件依赖Element-ui
+
++ 界面效果
+  ![动态表单](/images/form.png)
 
 + 使用说明
   + 引入组件
@@ -204,9 +483,179 @@
 | :------: | :------: | :------: |
 | submit | 表单提交方法触发的提交事件，参数（表单的数据） | val(Object) |
 
-+ 详细信息查看`PageFormDemo`
++ `PageFormDemo`
+  ```html
+  <template>
+      <div>
+          <page-form :colCount="4" :domains="domains" @submit="submit" :showBtn="false" ref="child" space="25%"></page-form>
 
-### 步骤条使用说明文档
+          <el-button @click="doChildMethod">点击触发子组件方法</el-button>
+      </div>
+
+  </template>
+
+  <script>
+      import PageForm from "@/components/PageForm";
+
+      export default {
+          name: "PageFormDemo",
+          components: {
+              PageForm
+          },
+          data() {
+              return {
+                  domains: [
+                      {
+                          label: '邮箱',
+                          key: 'email',
+                          type: 'text',
+                          placeholder: '请输入邮箱',
+                          disabled: true,
+                          value: '123@qq.con',
+                          hidden: true,
+                          rules: {
+                              required: true, message: '不能为空', trigger: 'blur'
+                          }
+                      },
+                      {
+                          label: '姓名',
+                          key: 'name',
+                          type: 'text',
+                          value: '',
+                          rules: {
+                              required: true, message: '不能为空', trigger: 'blur'
+                          }
+                      },
+                      {
+                          label: '年龄',
+                          key: 'age',
+                          type: 'number',
+                          value: '',
+                      },
+                      {
+                          label: '生日生日',
+                          key: 'birthday',
+                          type: 'date',
+                          value: '',
+                          placeholder: '请选择日期',
+                          rules: {
+                              required: true, message: '不能为空', trigger: 'blur'
+                          }
+                      },
+                      {
+                          label: '区域区域',
+                          key: 'area',
+                          type: 'select',
+                          value: 'nanchang',
+                          disabled: true,
+                          option: [
+                              {
+                                  label: '上海',
+                                  value: 'shanghai',
+                              },
+                              {
+                                  label: '南昌',
+                                  value: 'nanchang',
+                              },
+                              {
+                                  label: '武汉',
+                                  value: 'wuhan',
+                              },
+                          ],
+                          rules: {
+                              required: true, message: '不能为空', trigger: 'blur'
+                          }
+                      },
+                      {
+                          label: '开启',
+                          key: 'open',
+                          type: 'switch',
+                          value: false,
+                      },
+                      {
+                          label: '年龄',
+                          key: 'age',
+                          type: 'number',
+                          value: '',
+                          hidden: {resource: '上海'}
+                      },
+                      {
+                          label: '来源',
+                          key: 'resource',
+                          type: 'radio',
+                          value: '上海',
+                          // disabled: true,
+                          option: [
+                              {
+                                  label: '上海',
+                                  value: 'shanghai',
+                              },
+                              {
+                                  label: '南昌',
+                                  value: 'nanchang',
+                              },
+                              {
+                                  label: '武汉',
+                                  value: 'wuhan',
+                              },
+                          ],
+                      },
+                      {
+                          label: '多选',
+                          key: 'more',
+                          type: 'checkbox',
+                          value: [],
+                          // disabled: true,
+                          option: [
+                              {
+                                  label: '上海',
+                                  value: 'shanghai',
+                              },
+                              {
+                                  label: '南昌',
+                                  value: 'nanchang',
+                              },
+                              {
+                                  label: '武汉',
+                                  value: 'wuhan',
+                              },
+                          ],
+                      },
+                      {
+                          label: '年龄',
+                          key: 'age',
+                          type: 'number',
+                          value: '',
+                      },
+                      {
+                          label: '简介',
+                          key: 'desc',
+                          type: 'textarea',
+                          value: '',
+                          placeholder: '请输入',
+                          rules: {
+                              required: true, message: '不能为空', trigger: 'blur'
+                          },
+                      },
+                  ],
+              }
+          },
+          methods: {
+              submit(val) {
+                  console.log(val)
+              },
+              doChildMethod() {
+                  this.$refs.child.submitForm()
+              }
+          }
+      }
+  </script>
+  ```
+
+### 步骤条
+
++ 界面效果
+  ![步骤条](/images/steps.png)
 
 + 使用说明
   + 引入组件
@@ -238,11 +687,84 @@
 | :------: | :------: | :------: |
 | change | 步骤项点击触发事件，参数（val 当前点击的数据, index当前点击的索引位置） | val（Object）, index（Number） |
 
-+ 详细信息查看`PageStepsDemo`
++ `PageStepsDemo`
+  ```html
+  <template>
+      <page-steps :data="stepList" :space="200"></page-steps>
+  </template>
 
-### 动态树使用说明文档
+  <script>
+      import PageSteps from "@/components/PageSteps";
+      export default {
+          name: "PageStepsDemo",
+          components: {
+              PageSteps
+          },
+          data() {
+              return {
+                  stepList: [
+                      {
+                          finish: true, // 处理过的
+                          title: '招标立项'
+                      },
+                      {
+                          finish: true,
+                          title: '招标公告'
+                      },
+                      {
+                          finish: true,
+                          //active: true, // 当前选中的
+                          title: '招标文件 2017-02-16'
+                      },
+                      {
+                          finish: true,
+                          title: '入围单位审批 2017-02-19'
+                      },
+                      {
+                          finish: true,
+                          title: '发标 2017-02-19'
+                      },
+                      {
+                          finish: true,
+                          title: '答疑'
+                      },
+                      {
+                          finish: true,
+                          title: '回标'
+                      },
+                      {
+                          finish: true,
+                          title: '开标 2017-02-25'
+                      },
+                      {
+
+                          title: '评标'
+                      },
+                      {
+
+                          title: '清标'
+                      },
+                      {
+
+                          title: '二轮开标 2017-02-26'
+                      },
+                      {
+
+                          title: '定标 2017-02-28'
+                      },
+                  ],
+              }
+          }
+      }
+  </script>
+  ```
+
+### 动态树
 
 + 组件依赖Element-ui
+
++ 界面效果
+  ![动态树](/images/tree.png)
 
 + 使用说明
   + 引入组件
@@ -289,7 +811,82 @@
 | :------: | :------: | :------: |
 | change | 点击`叶子节点`时传出当前节点的值 | val(Object) |
 
-+ 详细信息查看`PageTreeDemo`
++ `PageTreeDemo`
+  ```html
+  <template>
+     <div>
+         <page-tree :treeData="data" :checkbox="true" ref="pageTree" keyField="id" @change="change" :prop="defaultProps"></page-tree>
 
+         <el-button @click="getNode">点击执行子组件事件</el-button>
+     </div>
+  </template>
 
-
+  <script>
+      import PageTree from "@/components/PageTree";
+      export default {
+          name: "PageTreeDemo",
+          components: {
+              PageTree
+          },
+          data() {
+              return {
+                  data: [
+                      {
+                          id: 1,
+                          name: '一级 11',
+                          children: [
+                              {
+                                  id: 4,
+                                  name: '二级 1-1',
+                                  disabled: true,
+                                  children: [
+                                      {
+                                          id: 9,
+                                          name: '三级 1-1-1'
+                                      }, {
+                                          id: 10,
+                                          name: '三级 1-1-2'
+                                      }]
+                              }]
+                      },
+                      {
+                          id: 2,
+                          name: '一级 2',
+                          children: [{
+                              id: 5,
+                              name: '二级 2-1'
+                          }, {
+                              id: 6,
+                              name: '二级 2-2'
+                          }]
+                      },
+                      {
+                          id: 3,
+                          name: '一级 3',
+                          children: [{
+                              id: 7,
+                              name: '二级 3-1'
+                          }, {
+                              id: 8,
+                              name: '二级 3-2'
+                          }]
+                      }
+                      ],
+                  defaultProps: {
+                      children: 'children',
+                      label: 'name'
+                  }
+              }
+          },
+          methods: {
+              getNode() {
+                  console.log(this.$refs.pageTree.getCheckedKeys())
+              },
+              // 点击叶子节点时该节点的数据
+              change(val){
+                  console.log(val)
+              }
+          }
+      }
+  </script>
+  ```
