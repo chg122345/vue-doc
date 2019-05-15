@@ -1,5 +1,5 @@
 
-* [Vue系列](/vue-components)
+* [Vue系列](/vue-components/)
 	
 * [快速开始](/quickStart)
 
