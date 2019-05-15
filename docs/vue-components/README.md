@@ -764,7 +764,7 @@
 + 组件依赖Element-ui
 
 + 界面效果
-  ![动态树](/images/tree.png)
+![动态树](/images/tree.png)
 
 + 使用说明
   + 引入组件
